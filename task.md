@@ -3,8 +3,8 @@
 ## Core Tasks - Minimum Viable Product
 
 ### 1. Environment Setup
-- Install opencv-python, mediapipe (ponytail: global lock, upgrade to specific versions later)
-- Set up Python env (ponytail: pip install only, skip virtualenv complexity)
+- Create venv: `python -m venv .venv` (ponytail: global lock, specific Python 3.11+)
+- Install deps: `pip install opencv-python mediapipe` (ponytail: pip install only)
 - Configure webcam access (ponytail: default 0 index, skip camera selection UI)
 
 ### 2. Hand Tracking Module (ponytail: finger states only, not full 21-landmark analysis)
