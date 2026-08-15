@@ -13,7 +13,7 @@
 - Single-hand tracking (ponytail: right-hand only, skip left-hand mirroring)
 
 ### 3. Virtual Fretboard (ponytail: 2 zones only - "fret zone" vs "open string zone")
-- 6 strings mapped to hand width (ponytale: index finger position = string selection)
+- 6 strings mapped to hand width (ponytail: divide width by 7 zones, no calibration)
 - 3 chord zones (ponytail: G, C, D major positions based on finger count)
 - No fret number tracking (ponytail: binary fretboard: pressed/unpressed)
 
@@ -24,7 +24,7 @@
 - Chord display: text overlay (ponytail: no fancy UI, just cv2.putText)
 
 ### 5. Visual Feedback (ponytail: minimal overlay)
-- Webcam feed background (ponytale: 640x480, no resize logic)
+- Webcam feed background (ponytail: 640x480, no resize logic)
 - Fretboard lines drawn once (ponytail: not re-drawn every frame if unchanged)
 - Finger indicators (ponytail: circles at tip landmarks only)
 - Current chord name (ponytail: single line text, no background box)
