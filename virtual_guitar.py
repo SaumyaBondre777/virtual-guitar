@@ -1,6 +1,7 @@
 import cv2
 import mediapipe as mp
 import numpy as np
+import winsound  #ponytail: Windows native audio, no cross-platform upgrade needed yet
 
 class VirtualGuitar:
     def __init__(self):
@@ -75,6 +76,10 @@ class VirtualGuitar:
                     chord = self.detect_chord(fingers)
                     if chord:
                         chord_text = f"Chord: {chord}"
+                        #ponytail: simple beep feedback - frequency mapped to chord, upgrade to chord samples later
+                        frequency = { 'G': 392, 'C': 294, 'D': 330 }[chord]  # musical notes
+                        duration = 0.1  # seconds
+                        winsound.Beep(frequency, int(duration * 1000))
 
             # Draw minimal overlay - just chord text and string labels
             #ponytail: single composite operation per frame, no double-buffering
