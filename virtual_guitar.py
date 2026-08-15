@@ -1,7 +1,20 @@
 import cv2
 import mediapipe as mp
 import numpy as np
-import winsound  #ponytail: Windows native audio, no cross-platform upgrade needed yet
+from numba import jit
+
+
+@jit(nopython=True)
+def generate_sine_wave(frequency, duration, sample_rate=44100):
+    """JIT-compiled sine wave generator using Numba."""
+    n_samples = int(duration * sample_rate)
+    amplitude = 0.5
+    buf = np.zeros(n_samples, dtype=np.int16)
+    for i in range(n_samples):
+        t = i / sample_rate
+        buf[i] = int(amplitude * 32767 * np.sin(2.0 * np.pi * frequency * t))
+    return buf
+
 
 class VirtualGuitar:
     def __init__(self):
@@ -27,6 +40,10 @@ class VirtualGuitar:
         # String mapping: 6 strings mapped to hand width
         #ponytail: divide width by 7 zones, no calibration - upgrade to position mapping later
         self.strings = ['E2', 'A2', 'D3', 'G3', 'B3', 'E4']
+
+        # Audio setup
+        self.sample_rate = 44100
+        self.duration = 0.1  # seconds
 
     def fingers_up(self, landmarks):
         """Detect which fingers are up using tip/MCP comparison."""
@@ -54,6 +71,29 @@ class VirtualGuitar:
                 return chord_name
         return None
 
+    def play_sound(self, chord):
+        """Play chord note using Numba-compiled sine wave."""
+        #ponytail: Numba JIT-compiled audio synthesis - upgrade to pyaudio/pcm later
+        note_freqs = {'G': 392, 'C': 294, 'D': 330}
+        frequency = note_freqs.get(chord, 200)
+        waveform = generate_sine_wave(frequency, self.duration, self.sample_rate)
+        # Normalize and play
+        waveform = waveform / np.max(np.abs(waveform)) if np.max(np.abs(waveform)) > 0 else waveform
+        # Write to temp file and play with sounddevice or just return
+        #ponytail: save to temp file for playback - upgrade to direct audio output later
+        import tempfile
+        import soundfile as sf
+        with tempfile.NamedTemporaryFile(suffix='.wav', delete=False) as tmp:
+            sf.write(tmp.name, waveform.reshape(-1, 1), self.sample_rate)
+            #ponytail: play using simpleaudio - upgrade to pygame later
+            try:
+                import simpleaudio as sa
+                wave = sa.WaveObject(tmp.name, 1, 2, self.sample_rate)
+                play_obj = wave.play()
+                play_obj.wait_done()
+            except:
+                pass  # Graceful fallback
+
     def run(self):
         print("Virtual Guitar - press 'q' to quit")
         while True:
@@ -76,10 +116,8 @@ class VirtualGuitar:
                     chord = self.detect_chord(fingers)
                     if chord:
                         chord_text = f"Chord: {chord}"
-                        #ponytail: simple beep feedback - frequency mapped to chord, upgrade to chord samples later
-                        frequency = { 'G': 392, 'C': 294, 'D': 330 }[chord]  # musical notes
-                        duration = 0.1  # seconds
-                        winsound.Beep(frequency, int(duration * 1000))
+                        #ponytail: Numba-generated chord sound
+                        self.play_sound(chord)
 
             # Draw minimal overlay - just chord text and string labels
             #ponytail: single composite operation per frame, no double-buffering
